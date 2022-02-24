@@ -1,6 +1,10 @@
 # gp-rentals
 This is a vehicle rental script rework from Carbon05 [qb-rentals](https://github.com/Carbon05/qb-rentals) script. 
 
+![alt text](https://i.imgur.com/DQGFLia.png) 
+![alt text](https://i.imgur.com/3GUC3kO.png)
+
+
 # What are the differences? 
 - Multi locations
 - Full language file to easy translate
