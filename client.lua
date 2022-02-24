@@ -42,7 +42,7 @@ end)
 function GetClosestRentZone()
     local pos = GetEntityCoords(PlayerPedId(), true)
     local current = nil
-    local dist = 10
+    local dist = 15
     for id, rentZone in pairs(Config.LandZones) do
         local distcheck = #(pos - vector3(Config.LandZones[id].Spawn.x, Config.LandZones[id].Spawn.y, Config.LandZones[id].Spawn.z))
         
@@ -351,10 +351,14 @@ RegisterNetEvent('gp-rental:client:selectCar', function(data)
     local Model = data.Model
     local label = Lang:t("error.not_enough_space", {vehicle = menu:sub(1,1):upper()..menu:sub(2)})
 
-    if IsAnyVehicleNearPoint(Config.LandZones[currentZone].Spawn.x, Config.LandZones[currentZone].Spawn.y, Config.LandZones[currentZone].Spawn.z, 4.0) then
-        QBCore.Functions.Notify(label, "error", 4500)
+    if currentZone then
+        if IsAnyVehicleNearPoint(Config.LandZones[currentZone].Spawn.x, Config.LandZones[currentZone].Spawn.y, Config.LandZones[currentZone].Spawn.z, 3.0) then
+            QBCore.Functions.Notify(label, "error", 4500)
+        else
+            TriggerServerEvent('gp-rental:server:removeMoney', money, Model)
+        end
     else
-        TriggerServerEvent('gp-rental:server:removeMoney', money, Model)
+        QBCore.Functions.Notify('For devs: Distance between NPC and Point must be closer then 15', "error", 4500)
     end
 
 end)
