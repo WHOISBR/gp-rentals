@@ -114,7 +114,7 @@ Lang = Locale:new({phrases = Translations, warnOnMissing = true})
 # Dependencies 
 - [qb-core](https://github.com/qbcore-framework/qb-core)
 - [qb-target](https://github.com/BerkieBb/qb-target)
-- [qb-menu] (https://github.com/qbcore-framework/qb-menu)
+- [qb-menu](https://github.com/qbcore-framework/qb-menu)
 
 # Installation
 - Drag & Drop
