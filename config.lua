@@ -1,6 +1,6 @@
 Config = {
 
-    PriceDivider = 100,
+    PriceDivider = 10,
 
     LandZones = {
         ['MorningWood'] = {
@@ -73,34 +73,34 @@ Config = {
             Type = 'Land',
             Npc = {
                 Model = 'cs_floyd',
-                Coord = vector4(83.82, 6420.52, 31.76, 338.87),
+                Coord = vector4(67.24, 6412.59, 31.23, 177.22),
                 Blip = true,
                 Scenario = "WORLD_HUMAN_CLIPBOARD_FACILITY"
             },
             Spawn = vector4(59.52, 6400.19, 31.13, 212.95)
         },
 
-        ['SandyAir'] = {
-            Type = 'Air',
-            Npc = {
-                Model = 'cs_floyd',
-                Coord = vector4(1760.51, 3296.87, 41.14, 137.1),
-                Blip = true,
-                Scenario = "WORLD_HUMAN_CLIPBOARD_FACILITY"
-            },
-            Spawn = vector4(1754.03, 3286.33, 41.92, 128.59)
-        },
+        -- ['SandyAir'] = {
+        --     Type = 'Air',
+        --     Npc = {
+        --         Model = 'cs_floyd',
+        --         Coord = vector4(1760.51, 3296.87, 41.14, 137.1),
+        --         Blip = true,
+        --         Scenario = "WORLD_HUMAN_CLIPBOARD_FACILITY"
+        --     },
+        --     Spawn = vector4(1754.03, 3286.33, 41.92, 128.59)
+        -- },
 
-        ['SandyWater'] = {
-            Type = 'Water',
-            Npc = {
-                Model = 'cs_floyd',
-                Coord = vector4(1331.01, 4270.4, 31.5, 251.56),
-                Blip = true,
-                Scenario = "WORLD_HUMAN_CLIPBOARD_FACILITY"
-            },
-            Spawn = vector4(1332.36, 4264.97, 30.18, 264.63)
-        },
+        -- ['SandyWater'] = {
+        --     Type = 'Water',
+        --     Npc = {
+        --         Model = 'cs_floyd',
+        --         Coord = vector4(1331.01, 4270.4, 31.5, 251.56),
+        --         Blip = true,
+        --         Scenario = "WORLD_HUMAN_CLIPBOARD_FACILITY"
+        --     },
+        --     Spawn = vector4(1332.36, 4264.97, 30.18, 264.63)
+        -- },
 
 
     },
@@ -108,10 +108,7 @@ Config = {
     Vehicles = {
         Land = {
             {
-                Model = 'futo',
-            },
-            {
-                Model = 'bison',
+                Model = 'cruiser',
             },
             {
                 Model = 'faggio3',
