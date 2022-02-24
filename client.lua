@@ -307,7 +307,7 @@ RegisterNetEvent('gp-rental:client:selectCar', function(data)
     local Model = data.Model
     local label = Lang:t("error.not_enough_space", {vehicle = menu:sub(1,1):upper()..menu:sub(2)})
 
-    if IsAnyVehicleNearPoint(Config.LandZones[currentZone].Spawn.x, Config.LandZones[currentZone].Spawn.y, Config.LandZones[currentZone].Spawn.z, 2.0) then
+    if IsAnyVehicleNearPoint(Config.LandZones[currentZone].Spawn.x, Config.LandZones[currentZone].Spawn.y, Config.LandZones[currentZone].Spawn.z, 4.0) then
         QBCore.Functions.Notify(label, "error", 4500)
     else
         TriggerServerEvent('gp-rental:server:removeMoney', money, Model)
