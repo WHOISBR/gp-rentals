@@ -1,6 +1,6 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 local SpawnVehicle = false
-local currentZone, landRentalPed, airRentalPed, waterRentalPed = nil, nil, nil, nil
+local currentZone, landRentalPed, airRentalPed, waterRentalPed, currentRental, _PlayerPedId, inVehicle = nil, nil, nil, nil, nil, nil, nil
 local npcBlips = {}
 -- Config Options 
 
@@ -12,16 +12,37 @@ end
 
 CreateThread(function()
     while true do
+        _PlayerPedId = PlayerPedId()
+        inVehicle = IsPedSittingInVehicle(_PlayerPedId, GetVehiclePedIsIn(_PlayerPedId))
         GetClosestRentZone()
+        
         Wait(1000)
     end
+end)
+
+CreateThread(function()
+   while true do
+        local vehicle = GetVehiclePedIsIn(_PlayerPedId)
+        local loop = 1000
+        if currentZone and inVehicle and vehicle == currentRental then
+            loop = 0
+            local playerCoords = GetEntityCoords(PlayerPedId())
+            DrawText3D(playerCoords.x, playerCoords.y, playerCoords.z + 1.2, Lang:t("task.return_veh"))
+            if IsControlJustPressed(0, 74) then
+                DeleteVehicle(vehicle)
+            end
+        else
+            loop = 1000
+        end
+        Wait(loop)
+   end
 end)
 
 -- Functions
 function GetClosestRentZone()
     local pos = GetEntityCoords(PlayerPedId(), true)
     local current = nil
-    local dist = 20
+    local dist = 10
     for id, rentZone in pairs(Config.LandZones) do
         local distcheck = #(pos - vector3(Config.LandZones[id].Spawn.x, Config.LandZones[id].Spawn.y, Config.LandZones[id].Spawn.z))
         
@@ -106,13 +127,6 @@ function _CreatePed(hash, coords, Scenario, zoneType)
                 label = Lang:t("task.rent_land"),
                 MenuType = 'Land',
                 targeticon = 'fas fa-car-side' -- This is the icon of the target itself, the icon changes to this when it turns blue on this specific option, this is OPTIONAL
-            },
-            {
-                Type = "client",
-                event = "gp-rental:client:returnVehicle",
-                icon = "fas fa-car",
-                label = Lang:t("task.return_veh"),
-                targeticon = 'fas fa-car-side' -- This is the icon of the target itself, the icon changes to this when it turns blue on this specific option, this is OPTIONAL
             }
         },
         distance = 1.0
@@ -127,13 +141,6 @@ function _CreatePed(hash, coords, Scenario, zoneType)
                 label = Lang:t("task.rent_air"),
                 MenuType = 'Air',
                 targeticon = 'fas fa-plane' -- This is the icon of the target itself, the icon changes to this when it turns blue on this specific option, this is OPTIONAL
-            },
-            {
-                Type = "client",
-                event = "gp-rental:client:returnVehicle",
-                icon = "fas fa-plane",
-                label = Lang:t("task.return_veh"),
-                targeticon = 'fas fa-plane' -- This is the icon of the target itself, the icon changes to this when it turns blue on this specific option, this is OPTIONAL
             }
         },
         distance = 1.0
@@ -147,13 +154,6 @@ function _CreatePed(hash, coords, Scenario, zoneType)
                 icon = "fas fa-ship",
                 label = Lang:t("task.rent_water"),
                 MenuType = 'Water',
-                targeticon = 'fas fa-ship' -- This is the icon of the target itself, the icon changes to this when it turns blue on this specific option, this is OPTIONAL
-            },
-            {
-                Type = "client",
-                event = "gp-rental:client:returnVehicle",
-                icon = "fas fa-ship",
-                label = Lang:t("task.return_veh"),
                 targeticon = 'fas fa-ship' -- This is the icon of the target itself, the icon changes to this when it turns blue on this specific option, this is OPTIONAL
             }
         },
@@ -199,7 +199,6 @@ function CreateZones()
 
             table.insert(npcBlips, npcBlip)
         end
-
     end
 
 end
@@ -230,6 +229,52 @@ function DeleteZones()
         npcBlips = {}
     end
 
+end
+
+function DeleteVehicle(vehicle)
+    if vehicle == currentRental then
+        SpawnVehicle = false
+        for i = -1, 16, 1 do
+            local seat = GetPedInVehicleSeat(vehicle, i)
+            TaskLeaveVehicle(seat, vehicle, 0)
+        end
+        SetVehicleDoorsLocked(vehicle)
+        Wait(1500)
+        QBCore.Functions.Notify(Lang:t("info.veh_returned"), 'success')
+        TriggerServerEvent('gp-rental:server:removePapers')
+        local vehicleClass = GetVehicleClass(currentRental)
+        local vehicleModel = string.lower(GetDisplayNameFromVehicleModel(GetEntityModel(currentRental)))
+        local engineHealth = GetVehicleEngineHealth(currentRental)
+        local bodyHealth = GetVehicleBodyHealth(currentRental)
+        local vehicleType
+
+        if vehicleClass ~= 14 and vehicleClass ~= 15 and vehicleClass ~= 16 then
+            vehicleType = 'Land'
+        elseif vehicleClass == 15 or vehicleClass == 16 then
+            vehicleType = 'Air'
+        elseif vehicleClass == 14 then
+            vehicleType = 'Water'
+        end
+        NetworkFadeOutEntity(vehicle, true,false)
+        QBCore.Functions.DeleteVehicle(vehicle)
+        TriggerServerEvent('gp-rental:server:refoundMoney', vehicleModel, vehicleType, engineHealth, bodyHealth)
+        currentRental = nil
+    end
+end
+
+function DrawText3D(x, y, z, text)
+    SetTextScale(0.35, 0.35)
+    SetTextFont(4)
+    SetTextProportional(1)
+    SetTextColour(255, 255, 255, 215)
+    SetTextEntry("STRING")
+    SetTextCentre(true)
+    AddTextComponentString(text)
+    SetDrawOrigin(x,y,z, 0)
+    DrawText(0.0, 0.0)
+    local factor = (string.len(text)) / 370
+    DrawRect(0.0, 0.0+0.0125, 0.017+ factor, 0.03, 0, 0, 0, 75)
+    ClearDrawOrigin()
 end
 
 -- Events
@@ -302,7 +347,6 @@ RegisterNetEvent('gp-rental:client:openMenu', function(data)
 end)
 
 RegisterNetEvent('gp-rental:client:selectCar', function(data)
-    local player = PlayerPedId()
     local money = data.money
     local Model = data.Model
     local label = Lang:t("error.not_enough_space", {vehicle = menu:sub(1,1):upper()..menu:sub(2)})
@@ -316,10 +360,10 @@ RegisterNetEvent('gp-rental:client:selectCar', function(data)
 end)
 
 RegisterNetEvent('gp-rental:client:spawnVehicle', function(data)
-    local player = PlayerPedId()
+    currentRental = nil
     QBCore.Functions.SpawnVehicle(data, function(vehicle)
         SetEntityHeading(vehicle, Config.LandZones[currentZone].Spawn.w)
-        TaskWarpPedIntoVehicle(player, vehicle, -1)
+        TaskWarpPedIntoVehicle(_PlayerPedId, vehicle, -1)
         TriggerEvent("vehiclekeys:client:SetOwner", GetVehicleNumberPlateText(vehicle))
         SetVehicleEngineOn(vehicle, true, true)
         SetVehicleDirtLevel(vehicle, 0.0)
@@ -327,45 +371,12 @@ RegisterNetEvent('gp-rental:client:spawnVehicle', function(data)
         SpawnVehicle = true
     end, Config.LandZones[currentZone].Spawn, true)
     Wait(1000)
-    local vehicle = GetVehiclePedIsIn(player, false)
-    local vehicleLabel = GetDisplayNameFromVehicleModel(GetEntityModel(vehicle))
-    vehicleLabel = GetLabelText(vehicleLabel)
+    local vehicle = GetVehiclePedIsIn(_PlayerPedId, false)
+    local vehicleLabel = GetLabelText(GetDisplayNameFromVehicleModel(GetEntityModel(vehicle)))
     local plate = GetVehicleNumberPlateText(vehicle)
+    currentRental = vehicle
     TriggerServerEvent('gp-rental:server:rentalPapers', plate, vehicleLabel)
 
-end)
-
-RegisterNetEvent('gp-rental:client:returnVehicle', function()
-    if SpawnVehicle then
-        local Player = QBCore.Functions.GetPlayerData()
-        QBCore.Functions.Notify(Lang:t("info.veh_returned"), 'success')
-        TriggerServerEvent('gp-rental:server:removePapers')
-        local vehicle = GetVehiclePedIsIn(PlayerPedId(),true)
-        local vehicleClass = GetVehicleClass(vehicle)
-        local vehicleModel = string.lower(GetDisplayNameFromVehicleModel(GetEntityModel(vehicle)))
-        local engineHealth = GetVehicleEngineHealth(vehicle)
-        local bodyHealth = GetVehicleBodyHealth(vehicle)
-        local vehicleType
-
-        if vehicleClass ~= 14 and vehicleClass ~= 15 and vehicleClass ~= 16 then
-            vehicleType = 'Land'
-        elseif vehicleClass == 15 or vehicleClass == 16 then
-            vehicleType = 'Air'
-        elseif vehicleClass == 14 then
-            vehicleType = 'Water'
-        end
-
-        print('vehicleModel', vehicleModel)
-        print('vehicleClass', vehicleClass)
-        print('vehicleType', vehicleType)
-
-        TriggerServerEvent('gp-rental:server:refoundMoney', vehicleModel, vehicleType, engineHealth, bodyHealth)
-        NetworkFadeOutEntity(vehicle, true,false)
-        QBCore.Functions.DeleteVehicle(vehicle)
-    else 
-        QBCore.Functions.Notify(Lang:t("error.no_vehicle"), "error")
-    end
-    SpawnVehicle = false
 end)
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
