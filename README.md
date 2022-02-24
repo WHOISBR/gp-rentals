@@ -1,4 +1,4 @@
-# gp-rental
+# gp-rentals
 This is a vehicle rental script rework from Carbon05 [qb-rentals](https://github.com/Carbon05/qb-rentals) script. 
 
 # What are the differences? 
