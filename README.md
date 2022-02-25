@@ -8,6 +8,11 @@ This is a vehicle rental script rework from Carbon05 [qb-rentals](https://github
 - Calculate price from [qb-core](https://github.com/qbcore-framework/qb-core) Shared/Vehicles.lua
 - Money refund on return. ( 50% of base rent price - damages )
 
+# What planed?
+- Remove ped wrapping to vehicle
+- Progressbar 
+- Opportunity to transfer the rental fee's to goverment account 
+
 # Important
 - All your vehicle must be placed in qb-core/Shared/Vehicle.lua
 
