@@ -3,7 +3,7 @@ game 'gta5'
 
 author 'Rav3n95#2849'
 description 'gp-rental'
-version '1.0.0'
+version '1.0.1'
 credit 'Carbon#1002, itsHyper'
 
 shared_scripts {
