@@ -1,16 +1,12 @@
-# gp-rentals
+# gp-rental
 This is a vehicle rental script rework from Carbon05 [qb-rentals](https://github.com/Carbon05/qb-rentals) script. 
-
-![alt text](https://i.imgur.com/DQGFLia.png) 
-![alt text](https://i.imgur.com/3GUC3kO.png)
-
 
 # What are the differences? 
 - Multi locations
-- Full language file to easy translate
+- Full support language files to easy translate
 - Easy config, you can choose from Land, Air, Water vehicles. 
 - Calculate price from [qb-core](https://github.com/qbcore-framework/qb-core) Shared/Vehicles.lua
-- Money refound on return. ( 50% of base rent price - damages )
+- Money refund on return. ( 50% of base rent price - damages )
 
 # Important
 - All your vehicle must be placed in qb-core/Shared/Vehicle.lua
@@ -92,7 +88,7 @@ local Translations = {
         ["header"] = -- Main title of the menu
         ['veh_returned'] = -- Information text about returned vehicle
         ['paid_deposit'] = -- Information text about the payment
-        ['refound'] = -- Information text about the refound
+        ['refund'] = -- Information text about the refund
     },
     error = {
         ["not_enough_space"] = -- Error message when something blocking the spot
@@ -118,7 +114,7 @@ Lang = Locale:new({phrases = Translations, warnOnMissing = true})
 # Dependencies 
 - [qb-core](https://github.com/qbcore-framework/qb-core)
 - [qb-target](https://github.com/BerkieBb/qb-target)
-- [qb-menu](https://github.com/qbcore-framework/qb-menu)
+- [qb-menu] (https://github.com/qbcore-framework/qb-menu)
 
 # Installation
 - Drag & Drop
