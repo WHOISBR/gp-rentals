@@ -4,12 +4,13 @@ QBCore.Functions.CreateUseableItem("rentalpapers", function(source, item, plate)
     TriggerEvent("vehiclekeys:client:SetOwner", plate)
 end)
 
-RegisterServerEvent('gp-rental:server:rentalPapers', function(plate, Model)
+RegisterServerEvent('gp-rental:server:rentalPapers', function(plate, model)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     local info = {}
     info.plate = plate
-    info.Model = Model
+    info.model = model
+
     TriggerClientEvent('inventory:client:ItemBox', src,  QBCore.Shared.Items["rentalpapers"], 'add')
     Player.Functions.AddItem('rentalpapers', 1, false, info)
 end)
@@ -39,7 +40,7 @@ RegisterNetEvent('gp-rental:server:removeMoney', function(vehCost, vehModel)
 
 end)
 
-RegisterNetEvent('gp-rental:server:refoundMoney', function(vehModel, vehType, engineHealth, bodyHealth)
+RegisterNetEvent('gp-rental:server:refundMoney', function(vehModel, vehType, engineHealth, bodyHealth)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
 
@@ -47,10 +48,10 @@ RegisterNetEvent('gp-rental:server:refoundMoney', function(vehModel, vehType, en
         if Config.Vehicles[vehType][i].Model == vehModel then
             local rentPrice = math.floor(QBCore.Shared.Vehicles[vehModel].price / Config.PriceDivider)
             local vehicleHealth = (engineHealth + bodyHealth) / 20
-            local refound = math.ceil((vehicleHealth / 100) * (rentPrice / 2)) 
+            local refund = math.ceil((vehicleHealth / 100) * (rentPrice / 2)) 
 
-            Player.Functions.AddMoney('cash', refound)
-            TriggerClientEvent('QBCore:Notify', src, tostring(refound)..Lang:t("info.refound"), 'success')
+            Player.Functions.AddMoney('cash', refund)
+            TriggerClientEvent('QBCore:Notify', src, tostring(refund)..Lang:t("info.refund"), 'success')
         end
     end
 end)
