@@ -257,7 +257,7 @@ function DeleteVehicle(vehicle)
         end
         NetworkFadeOutEntity(vehicle, true,false)
         QBCore.Functions.DeleteVehicle(vehicle)
-        TriggerServerEvent('gp-rental:server:refoundMoney', vehicleModel, vehicleType, engineHealth, bodyHealth)
+        TriggerServerEvent('gp-rental:server:refundMoney', vehicleModel, vehicleType, engineHealth, bodyHealth)
         currentRental = nil
     end
 end
